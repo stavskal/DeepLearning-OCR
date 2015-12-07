@@ -28,22 +28,6 @@ from scipy import misc
 
 
 
-def regularization_objective(layers, lambda1=0., lambda2=0., *args, **kwargs):
-    # default loss
-    losses = objective(layers, *args, **kwargs)
-    # get the layers' weights, but only those that should be regularized
-    # (i.e. not the biases)
-    weights = get_all_params(layers[-1], regularizable=True)
-    # sum of absolute weights for L1
-    sum_abs_weights = sum([abs(w).sum() for w in weights])
-    # sum of squared weights for L2
-    sum_squared_weights = sum([(w ** 2).sum() for w in weights])
-    # add weights to regular loss
-    losses += lambda1 * sum_abs_weights + lambda2 * sum_squared_weights
-    return losses
-
-
-
 net2 = NeuralNet(
     layers=[
         ('input', layers.InputLayer),
