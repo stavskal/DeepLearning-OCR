@@ -38,34 +38,10 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
             excerpt = slice(start_idx, start_idx + batchsize)
         yield inputs[excerpt], targets[excerpt]
 
-net2 = NeuralNet(
-    layers=[
-        ('input', layers.InputLayer),
-        ('conv1', layers.Conv2DLayer),
-        ('pool1', layers.MaxPool2DLayer),
-        ('conv2', layers.Conv2DLayer),
-        ('pool2', layers.MaxPool2DLayer),
-        ('hidden3', layers.DenseLayer),
-        ('output', layers.DenseLayer),
-        ],
-        input_shape = (None,1,25,25),
-        conv1_num_filters=10, conv1_filter_size=(3, 3), pool1_pool_size=(2, 2),
-        conv2_num_filters=10, conv2_filter_size=(2, 2), pool2_pool_size=(2, 2),
-        hidden3_num_units=300,
-        output_num_units=26,
-        output_nonlinearity=softmax,
-        update_learning_rate=0.01,
-        
-        use_label_encoder=True,
-  	    update_momentum=0.9,
-  	    regression=False,
-   	    max_epochs=100,
- 	    verbose=1,
-        )
+
 
 os.chdir('/media/tabrianos/90BEA0A3BEA08378/dataset/TRAIN')
 directory = os.path.dirname(os.path.abspath(__file__)) 
-#print(os.listdir(directory))
 Y=[]
 imlist=[]
 Xtest=[]
@@ -76,12 +52,9 @@ for filename in os.listdir(directory):
 	# extracting labels from filename
     label = filename[-8:-7]
     if ord(label)>=65 and ord(label)<=90: 
-       # labelVec=np.zeros(26)
         cl = ord(label)-65
-       # labelVec[cl] = cl
         
         tempim = np.array(color.rgb2gray(io.imread(filename)))
-        #print(np.unique(tempim))
         # keeping only the sub-matrix that contains the non-white pixels
         # then resizing to feed into the DNN
         index=np.where(tempim==0)
@@ -176,11 +149,3 @@ print("Final results:")
 print("  test loss:\t\t\t{:.6f}".format(test_err / test_batches))
 print("  test accuracy:\t\t{:.2f} %".format(test_acc / test_batches * 100))
 
-print(stacked.shape,Y.shape)
-
-net2.fit(stacked,Y)
-
-ytest=np.array(ytest)
-
-preds=net2.predict(stackedtest)
-print classification_report(ytest,preds)
